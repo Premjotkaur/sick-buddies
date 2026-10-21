@@ -220,6 +220,26 @@ body.senior .vbtn{font-size:15.5px;padding:12px 4px;gap:5px}body.senior .vnv{gap
 body.senior .nbx b,body.senior .nbx .pr{font-size:18px}body.senior .nbx small,body.senior .nqb,body.senior .ncount,body.senior .nerr{font-size:15px}body.senior .nbx .pr i{font-size:13px}
 body.dark .app:has(#nurse.on){background:#111a2e}body.dark .nbx{background:#121c33;border-color:#2b3a5e}body.dark .nbx b{color:#e6edf8}body.dark .nbx small,body.dark .nbx .pr i{color:#94a3c4}body.dark .nbx .pr,body.dark .ncount,body.dark .nqb{color:#8fb3ff}body.dark .nbx.on{background:#1d2c4d;border-color:#5b80d6;box-shadow:none}body.dark .nbx .mi{background:#2a2350;color:#c4b5fd}body.dark .nbx.on .mi{background:#7c3aed;color:#fff}body.dark .nbx.on .rd{border-color:#8fb3ff}body.dark .nqb{border-color:#5b80d6}body.dark .nerr{color:#fca5a5}
 .app:has(#hygiene.on){background:#f1f6ff}body.dark .app:has(#hygiene.on){background:#111a2e}.hy .pc .pimg{object-fit:contain;background:#fff}
+
+/* compact-cards-v1 */
+.mgrid{grid-template-columns:repeat(3,1fr);gap:8px;margin-top:10px}
+.pc{padding:6px;gap:2px;border-radius:12px;box-shadow:none;border:1px solid #e6ecf5}
+.pc .pimg{width:100%;aspect-ratio:1;max-height:92px;border-radius:8px}
+.pc b{font-size:13px;line-height:1.25;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;min-height:2.5em}
+.pc small{font-size:11px;line-height:1.3;display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;overflow:hidden}
+.pfoot{padding-top:4px;gap:4px}.price{font-size:13px}
+.pc .addb{padding:3px 10px;border-radius:999px;font-size:12px;border-width:1px}
+.pc .qty{border-radius:999px}.pc .qty button{width:20px;height:22px;font-size:13px}.pc .qty span{min-width:14px;font-size:12px}
+.pc .rx{font-size:10px;padding:1px 5px;top:8px;left:8px}
+.pc .fmk{width:11px;height:11px;margin-right:4px;vertical-align:-1px}.pc .fmk i{transform:scale(.8)}
+.scan{display:flex;flex-wrap:wrap;align-items:center;gap:8px;padding:8px 10px;border-radius:14px;border-width:1px}
+.scanh{flex:1;min-width:0;gap:8px}.scanic{width:32px;height:32px;border-radius:10px}.scanic svg{width:18px;height:18px}.scanh b{font-size:14px}.scanh small{display:none}
+.scanbtns{margin-top:0;gap:6px}.scanbtns label{flex:none;padding:6px 10px;border-radius:999px;font-size:12px}.scanbtns label svg{width:14px;height:14px}.scan .ocr{flex-basis:100%;margin-top:4px}
+.msearch{margin:10px 0 0;padding:7px 12px;border-radius:12px;border-width:1px}.msearch input{font-size:14px}.msearch svg{width:17px;height:17px}
+.cats{padding:8px 0 2px;gap:6px}.cat{padding:5px 12px;font-size:12px;border-width:1px}
+.vnv{padding:3px;border-radius:12px;border-width:1px}.vbtn{padding:6px;font-size:13px;gap:6px}
+body.dark .pc{border-color:#24314f}
+body.senior .mgrid{grid-template-columns:1fr 1fr;gap:10px}body.senior .pc{padding:8px}body.senior .pc .pimg{max-height:150px}body.senior .pc b{font-size:16px}body.senior .pc small{font-size:14px}body.senior .price{font-size:16px}body.senior .pc .addb{font-size:15px;padding:6px 14px}body.senior .pc .qty button{width:30px;height:32px;font-size:17px}body.senior .pc .qty span{font-size:15px}body.senior .scanh b{font-size:16px}body.senior .scanh{flex-basis:100%}body.senior .scanbtns{flex-basis:100%}body.senior .scanbtns label{flex:1;justify-content:center}body.senior .scanbtns label{font-size:15px;padding:8px 12px}body.senior .cat{font-size:15px;padding:7px 14px}body.senior .vbtn{font-size:15px;padding:9px 4px}body.senior .msearch input{font-size:17px}
 </style></head><body><div class="app">
 <div id="home" class="screen on">
 <header><div class="left"><div class="brand"><svg width="30" height="30" viewBox="0 0 24 24"><path d="M12 21C5 16 2 12 2 8.5A4.5 4.5 0 0 1 12 6a4.5 4.5 0 0 1 10 2.5C22 12 19 16 12 21z" fill="#2563eb"/><path d="M12 9v6M9 12h6" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg>Sick Buddies</div></div>
