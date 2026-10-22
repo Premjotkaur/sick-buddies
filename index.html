@@ -284,6 +284,8 @@ body.senior .srmeds{display:flex;flex-direction:column;gap:12px;flex-basis:100%}
 body.senior #medGrid{grid-template-columns:1fr;gap:10px}body.senior #medGrid .pc{display:grid;grid-template-columns:84px 1fr;grid-template-rows:auto auto 1fr;column-gap:14px;padding:12px}body.senior #medGrid .pc .pimg{grid-row:1/4;width:84px;height:84px;max-height:none}body.senior #medGrid .pc b{min-height:0}body.senior #medGrid .pc small{-webkit-line-clamp:2}
 body.senior .srwiz [data-sr]{display:none}body.senior .srwiz [data-sr].sron{display:block}
 body.senior .srnav{display:flex;align-items:center;gap:10px;margin-top:16px}.srnav button{flex:1;padding:18px;border-radius:16px;font-size:19px;font-weight:700;cursor:pointer}.srprev{background:#fff;border:1.5px solid #c7d4ea;color:#334166}.srnext{background:#2563eb;border:none;color:#fff}.srcnt{font-size:15px;color:#64748b;white-space:nowrap}.srnav button[hidden]{visibility:hidden;display:block}
+
+.ocrq{width:100%;box-sizing:border-box;margin-top:8px;padding:10px 12px;border:1.5px solid #c7d4ea;border-radius:12px;font-size:14px;outline:none}.ocrcall{color:#166534;font-weight:700;margin-left:4px}#ocrBox.fail .ocrst{color:#b91c1c}body.senior .ocrq{font-size:18px;padding:14px}body.dark .ocrq{background:#121c33;border-color:#2b3a5e;color:#e6edf8}body.dark .ocrcall{color:#86efac}
 </style></head><body><div class="app">
 <div id="home" class="screen on">
 <header><div class="left"><div class="brand"><svg width="30" height="30" viewBox="0 0 24 24"><path d="M12 21C5 16 2 12 2 8.5A4.5 4.5 0 0 1 12 6a4.5 4.5 0 0 1 10 2.5C22 12 19 16 12 21z" fill="#2563eb"/><path d="M12 9v6M9 12h6" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg>Sick Buddies</div></div>
@@ -474,18 +476,55 @@ document.getElementById('rxBox').style.display=needRx?'':'none';document.getElem
 function checkout(){document.getElementById('cmsg').textContent='Checkout is coming soon. Your cart is saved.'}
 /* OCR */
 var lastMatches=null,tessLoading=null;
-function loadTess(){if(window.Tesseract)return Promise.resolve();if(tessLoading)return tessLoading;tessLoading=new Promise((res,rej)=>{var s=document.createElement('script');s.src='https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js';s.onload=res;s.onerror=()=>{tessLoading=null;rej(new Error('load'))};document.head.appendChild(s)});return tessLoading}
+function loadTess(){if(window.Tesseract)return Promise.resolve();if(tessLoading)return tessLoading;tessLoading=new Promise((res,rej)=>{var s=document.createElement('script');s.src='https://cdn.jsdelivr.net/npm/tesseract.js@5.1.1/dist/tesseract.min.js';s.crossOrigin='anonymous';s.onload=res;s.onerror=()=>{tessLoading=null;rej(new Error('load'))};document.head.appendChild(s)});return tessLoading}
+/* Pinned OCR assets: small int-quantised English model (2.9 MB) instead of the 11 MB default, so phones on mobile data load fast */
+var OCR_CFG={workerPath:'https://cdn.jsdelivr.net/npm/tesseract.js@5.1.1/dist/worker.min.js',corePath:'https://cdn.jsdelivr.net/npm/tesseract.js-core@5.1.1',langPath:'https://cdn.jsdelivr.net/npm/@tesseract.js-data/eng/4.0.0_best_int'},ocrWorkerP=null,ocrProg=null,ocrBusy=false;
+var OCR_STAGE={'loading tesseract core':['Downloading the text reader',0.05,0.25],'initializing tesseract':['Starting the text reader',0.25,0.3],'loading language traineddata':['Downloading English language data',0.3,0.5],'loading language traineddata (from cache)':['Loading English language data',0.3,0.5],'initializing api':['Getting ready',0.5,0.55],'recognizing text':['Reading your prescription',0.55,1]};
+function ocrLog(m){var g=OCR_STAGE[m.status];if(!g||!ocrProg)return;ocrProg(g[0]+(m.progress?'... '+Math.round(m.progress*100)+'%':'...'),g[1]+(g[2]-g[1])*(m.progress||0))}
+function withTimeout(pr,ms,code){return Promise.race([pr,new Promise((_,rej)=>setTimeout(()=>rej({code:code||'timeout'}),ms))])}
+function getOcrWorker(){if(ocrWorkerP)return ocrWorkerP;ocrWorkerP=(async()=>{await withTimeout(loadTess(),45000,'load');return await withTimeout(Tesseract.createWorker('eng',1,Object.assign({logger:ocrLog},OCR_CFG)),90000,'load')})();ocrWorkerP.catch(()=>{ocrWorkerP=null});return ocrWorkerP}
+async function resetOcrWorker(){var p=ocrWorkerP;ocrWorkerP=null;try{var w=await p;w&&w.terminate()}catch(_){}}
+/* Load a phone photo with EXIF rotation applied, downscale to 1600px, grey + contrast stretch, plus an adaptive-threshold (binarised) copy */
+async function ocrPrep(file){if(file.size>40*1024*1024)throw {code:'big'};var src=null,close=()=>{};
+try{src=await createImageBitmap(file,{imageOrientation:'from-image'});close=()=>src.close&&src.close()}catch(_){src=await new Promise((res,rej)=>{var u=URL.createObjectURL(file),im=new Image();im.onload=()=>{res(im);setTimeout(()=>URL.revokeObjectURL(u),1000)};im.onerror=()=>{URL.revokeObjectURL(u);rej({code:/hei[cf]/i.test(file.type+file.name)?'heic':'decode'})};im.src=u})}
+var W0=src.naturalWidth||src.width,H0=src.naturalHeight||src.height;if(!W0||!H0)throw {code:'decode'};var k=Math.min(1,1600/Math.max(W0,H0)),w=Math.max(1,Math.round(W0*k)),h=Math.max(1,Math.round(H0*k));
+var c=document.createElement('canvas');c.width=w;c.height=h;var x=c.getContext('2d',{willReadFrequently:true});x.fillStyle='#fff';x.fillRect(0,0,w,h);x.imageSmoothingQuality='high';x.drawImage(src,0,0,w,h);close();
+var d=x.getImageData(0,0,w,h),a=d.data,n=w*h,g=new Uint8ClampedArray(n),hist=new Uint32Array(256);for(var i=0,j=0;i<n;i++,j+=4){var v=(a[j]*299+a[j+1]*587+a[j+2]*114)/1000|0;g[i]=v;hist[v]++}
+var lo=0,hi=255,acc=0;for(;lo<255;lo++){acc+=hist[lo];if(acc>n*0.01)break}acc=0;for(;hi>0;hi--){acc+=hist[hi];if(acc>n*0.01)break}if(hi-lo<20){lo=0;hi=255}var sc=255/(hi-lo);
+for(i=0;i<n;i++){v=(g[i]-lo)*sc;g[i]=v<0?0:v>255?255:v}
+for(i=0,j=0;i<n;i++,j+=4){a[j]=a[j+1]=a[j+2]=g[i];a[j+3]=255}x.putImageData(d,0,0);
+/* adaptive threshold (Bradley) using an integral image: handles shadows and uneven light */
+var I=new Float64Array((w+1)*(h+1)),r=Math.max(8,Math.round(Math.max(w,h)/50));for(var yy=1;yy<=h;yy++){var row=0;for(var xx=1;xx<=w;xx++){row+=g[(yy-1)*w+xx-1];I[yy*(w+1)+xx]=I[(yy-1)*(w+1)+xx]+row}}
+var c2=document.createElement('canvas');c2.width=w;c2.height=h;var x2=c2.getContext('2d'),d2=x2.createImageData(w,h),b=d2.data;
+for(yy=0;yy<h;yy++){var y1=Math.max(0,yy-r),y2=Math.min(h,yy+r+1);for(xx=0;xx<w;xx++){var x1=Math.max(0,xx-r),x3=Math.min(w,xx+r+1),cnt=(y2-y1)*(x3-x1),sum=I[y2*(w+1)+x3]-I[y1*(w+1)+x3]-I[y2*(w+1)+x1]+I[y1*(w+1)+x1],o=(yy*w+xx)*4,vv=g[yy*w+xx]*cnt<sum*0.88?0:255;b[o]=b[o+1]=b[o+2]=vv;b[o+3]=255}}x2.putImageData(d2,0,0);
+return {gray:c,bin:c2,w:w,h:h,orig:W0+'x'+H0}}
+var OCR_ERR={big:'This photo is too large. Please take a new photo, or choose a smaller one.',heic:'This photo format (HEIC) cannot be opened in this browser. Use the Take photo button, or choose a JPG or PNG photo.',decode:'This file could not be opened as a photo. Please take a new photo, or choose a JPG or PNG.',load:'Could not download the text reader. Check your internet connection and try again.',timeout:'Reading took too long.'};
+function ocrFail(code){var m=(OCR_ERR[code]||'Something went wrong while reading.')+' Couldn\u2019t read, try a clearer photo or call us.';ocrState(m,0);document.getElementById('ocrBox').classList.add('fail');document.getElementById('ocrSt').innerHTML=esc(m)+' <a class="ocrcall" href="tel:+919000000000">Call us</a>';document.getElementById('ocrRes').style.display='';runMatch()}
+
+
 function ocrState(t,p){document.getElementById('ocrBox').classList.add('show');document.getElementById('ocrSt').textContent=t;document.getElementById('pbar').style.width=Math.round((p||0)*100)+'%'}
-async function scanRx(inp){var f=inp.files&&inp.files[0];inp.value='';if(!f)return;setRx(f.name);refreshAll();document.getElementById('ocrText').value='';document.getElementById('ocrRes').style.display='none';ocrState('Loading text reader...',0.05);
-try{await loadTess();ocrState('Reading your prescription...',0.1);var r=await Tesseract.recognize(f,'eng',{logger:m=>{if(m.status==='recognizing text')ocrState('Reading your prescription... '+Math.round(m.progress*100)+'%',m.progress)}});
-ocrState('Done. Check the text below and edit if needed.',1);document.getElementById('ocrText').value=r.data.text.trim();document.getElementById('ocrRes').style.display='';runMatch()}
-catch(e){ocrState('Could not read the prescription. Check your connection and try again, or search for medicines below.',0);document.getElementById('ocrRes').style.display='';runMatch()}}
+async function scanRx(inp){var f=inp.files&&inp.files[0];inp.value='';if(!f)return;if(ocrBusy){ocrState('Still reading the previous photo, please wait...',0.1);return}ocrBusy=true;setRx(f.name);refreshAll();var box=document.getElementById('ocrBox');box.classList.remove('fail');document.getElementById('ocrText').value='';document.getElementById('ocrRes').style.display='none';ocrState('Opening your photo...',0.02);box.scrollIntoView({block:'nearest'});
+ocrProg=ocrState;try{var im=await withTimeout(ocrPrep(f),20000,'decode');ocrState('Downloading the text reader...',0.05);var wk=await getOcrWorker();
+var best=null;for(var v of ['gray','bin']){ocrState(v==='gray'?'Reading your prescription...':'Trying again with sharper contrast...',v==='gray'?0.55:0.8);var r=await withTimeout(wk.recognize(im[v]),60000,'timeout'),t=(r.data.text||'').trim(),m=matchText(t),sc=m.length*20+(r.data.confidence||0);if(!best||sc>best.sc)best={t:t,sc:sc,m:m,conf:r.data.confidence};if(m.length&&r.data.confidence>=60)break}
+im.gray.width=im.bin.width=0;ocrState(best.t?'Done. Check the text below and edit if needed.':'No text found. Couldn\u2019t read, try a clearer photo or call us.',1);document.getElementById('ocrText').value=best.t;document.getElementById('ocrRes').style.display='';runMatch()}
+catch(e){console.warn('OCR failed',e);var code=e&&e.code||(e&&e.message==='load'?'load':'');if(code==='timeout'||code==='load')resetOcrWorker();ocrFail(code)}finally{ocrBusy=false;ocrProg=null}}
+
+
 function lev(a,b){if(Math.abs(a.length-b.length)>2)return 9;var d=[];for(var i=0;i<=a.length;i++){d[i]=[i];for(var j=1;j<=b.length;j++)d[i][j]=i?Math.min(d[i-1][j]+1,d[i][j-1]+1,d[i-1][j-1]+(a[i-1]===b[j-1]?0:1)):j}return d[a.length][b.length]}
-function matchText(txt){var s=' '+txt.toLowerCase().replace(/[^a-z0-9]+/g,' ')+' ',w=s.trim().split(' ').filter(Boolean);var out=[];MEDS.forEach(m=>{var best=0,why='';m.kw.forEach(k=>{var kk=k.replace(/[^a-z0-9 ]/g,''),sc=0;if(kk.includes(' ')){if(s.includes(' '+kk+' '))sc=3}else if(w.includes(kk))sc=3;else if(kk.length>=5&&w.some(x=>lev(x,kk)<=(kk.length>=8?2:1)))sc=2;if(sc>best){best=sc;why=k}});
-var nm=m.name.toLowerCase().split(/[^a-z0-9]+/)[0];if(nm.length>=4&&(w.includes(nm)||w.some(x=>x.length>=4&&lev(x,nm)<=1)))best=Math.max(best,4),why=why||nm;if(best)out.push({m:m,sc:best,why:why})});out.sort((a,b)=>b.sc-a.sc);return out}
+function ocrClean(t){return (' '+t.toLowerCase()+' ').replace(/(\d)\s*(mg|ml|gm|g)\b/g,'$1 $2 ').replace(/\b([a-z]*)[0]([a-z]+)\b/g,'$1o$2').replace(/\b([a-z]+)[1|!]([a-z]*)\b/g,'$1l$2').replace(/\b([a-z]+)5([a-z]+)\b/g,'$1s$2').replace(/[^a-z0-9]+/g,' ')}
+var MED_GENERIC={paracetamol:['dolo','crocin'],paracetamo:['dolo','crocin'],acetaminophen:['dolo','crocin'],pcm:['dolo','crocin'],cephalexin:['sporidex'],cefalexin:['sporidex'],cephalaxin:['sporidex'],ors:['ors-sachet','ors-drink'],electral:['ors-sachet','ors-drink'],honitus:['honitus'],vicks:['vicks']};
+function matchText(txt){var s=ocrClean(txt),w=s.trim().split(' ').filter(Boolean),out=[],near=(x,k)=>x===k||(k.length>=5&&x.length>=4&&lev(x,k)<=(k.length>=8?2:1))||(k.length>=4&&x.length>k.length&&x.startsWith(k))||(k.length===4&&x.length===4&&lev(x,k)<=1&&/^[a-z]+$/.test(x)&&w[w.indexOf(x)+1]&&/^\d/.test(w[w.indexOf(x)+1]));
+MEDS.forEach(m=>{var best=0,why='';m.kw.forEach(k=>{var kk=k.replace(/[^a-z0-9 ]/g,''),sc=0,hit='';if(kk.includes(' ')){if(s.includes(' '+kk+' '))sc=3,hit=kk}else{var f=w.find(x=>x===kk);if(f)sc=3,hit=f;else{f=w.find(x=>near(x,kk));if(f)sc=2,hit=f}}if(sc>best){best=sc;why=hit===kk?k:hit+' \u2248 '+k}});
+var nm=m.name.toLowerCase().split(/[^a-z0-9]+/)[0],f2=nm.length>=4&&w.find(x=>near(x,nm));if(f2)best=Math.max(best,4),why=why||nm;if(best)out.push({m:m,sc:best,why:why})});
+w.forEach(x=>{for(var g in MED_GENERIC)if(near(x,g))MED_GENERIC[g].forEach(id=>{if(!out.some(o=>o.m.id===id)){var m=MEDS.find(z=>z.id===id);if(m)out.push({m:m,sc:1,why:x+' \u2248 '+g})}})});
+out.sort((a,b)=>b.sc-a.sc);return out}
+
+
 function runMatch(){lastMatches=matchText(document.getElementById('ocrText').value||'');renderMatches(lastMatches)}
-function renderMatches(l){if(!l)return;var el=document.getElementById('ocrMatches');el.innerHTML=l.length?l.map(x=>'<div class="mrow"><img src="'+x.m.img+'" alt=""><div class="mi2"><b>'+esc(x.m.name)+(x.m.rx?' <span class="rx" style="position:static">Rx</span>':'')+'</b><small>Matched "'+esc(x.why)+'" &middot; '+rupee(x.m.price)+'</small></div>'+ctrl(x.m)+'</div>').join(''):'<p class="nomatch">We could not match any medicines from this prescription. Edit the text above and tap Find medicines again, or search below.</p>'}
-renderCart();
+function renderMatches(l){if(!l)return;var el=document.getElementById('ocrMatches');el.innerHTML=l.length?l.map(x=>'<div class="mrow"><img src="'+x.m.img+'" alt=""><div class="mi2"><b>'+esc(x.m.name)+(x.m.rx?' <span class="rx" style="position:static">Rx</span>':'')+'</b><small>Matched "'+esc(x.why)+'" &middot; '+rupee(x.m.price)+'</small></div>'+ctrl(x.m)+'</div>').join(''):'<p class="nomatch">We could not match any medicines. The text we read is shown above; you can fix it and tap Find medicines, or search here.</p><input class="ocrq" id="ocrQ" placeholder="Search medicines" oninput="ocrSearch()" value="'+esc(window._ocrQ||'')+'"><div class="mlist" id="ocrQRes"></div>';if(!l.length&&window._ocrQ)ocrSearch()}
+function ocrSearch(){var q=(document.getElementById('ocrQ').value||'').toLowerCase().trim();window._ocrQ=q;var r=document.getElementById('ocrQRes');if(!q){r.innerHTML='';return}var l=MEDS.filter(m=>(m.name+' '+m.sub+' '+m.kw.join(' ')).toLowerCase().includes(q));r.innerHTML=l.length?l.map(m=>'<div class="mrow"><img src="'+m.img+'" alt=""><div class="mi2"><b>'+esc(m.name)+'</b><small>'+esc(m.sub)+' &middot; '+rupee(m.price)+'</small></div>'+ctrl(m)+'</div>').join(''):'<p class="nomatch">No medicines found. Call us and we will help.</p>'}
+
+
 /* Google Sign-In (Google Identity Services), client-side only.
    NOTE: this decodes the ID token in the browser for display only. Real production apps
    MUST send the credential (ID token) to a server and verify its signature, audience and
