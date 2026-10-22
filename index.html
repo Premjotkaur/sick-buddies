@@ -315,7 +315,21 @@ body.senior.dark button.senior{background:#18233b;border-color:#2c3b5f;color:#d6
 .lpreq{color:#c2410c!important;font-size:13px!important}.reqnote{display:block;font-size:11px;color:#94a3b8}
 body.senior .reqb,body.senior .reqd{font-size:15px;padding:9px 12px;max-width:150px}body.senior .ocrfull summary{font-size:17px}body.senior .ocrfull pre{font-size:15px}body.senior .lpreq{font-size:16px!important}body.senior .reqnote{font-size:14px}
 body.dark .mrow.unm{background:#2a2117;border-color:#5a3d1f}body.dark .reqb{background:#3a2a17;border-color:#9a5a24;color:#fdba74}body.dark .reqd{background:#14352a;color:#86efac}body.dark .ocrfull{background:#121c33;border-color:#2b3a5e}body.dark .ocrfull summary{color:#8fb3ff}body.dark .ocrfull pre{color:#c7d7fb}body.dark .lpreq{color:#fdba74!important}body.dark .reqnote{color:#7d8db0}
-</style></head><body><div class="app">
+
+/* splash-v1 */
+#splash{position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;background:linear-gradient(160deg,#eef4ff 0%,#fdf0f6 100%);transition:opacity .5s ease,visibility .5s}
+#splash.out{opacity:0;visibility:hidden}.spin{display:flex;flex-direction:column;align-items:center}
+.sph{filter:drop-shadow(0 8px 18px rgba(122,167,247,.35));animation:spbeat 1.1s ease-in-out 2}
+@keyframes spbeat{0%,100%{transform:scale(1)}14%{transform:scale(1.18)}28%{transform:scale(1)}42%{transform:scale(1.12)}70%{transform:scale(1)}}
+.specg{color:#f08bb3;margin-top:6px}.specg path{stroke-dasharray:260;stroke-dashoffset:260;animation:specg 1.4s ease-out .2s forwards}@keyframes specg{to{stroke-dashoffset:0}}
+.spname{margin:10px 0 0;font-size:32px;font-weight:800;color:#1e3a8a;letter-spacing:.2px;opacity:0;transform:translateY(12px);animation:spin .7s ease-out 1.1s forwards}.sptag{margin:6px 0 0;font-size:15px;color:#64748b;opacity:0;animation:spin .7s ease-out 1.4s forwards}@keyframes spin{to{opacity:1;transform:none}}
+body.senior .spname{font-size:40px}body.senior .sptag{font-size:19px}body.senior .sph{width:130px;height:130px}
+body.dark #splash{background:linear-gradient(160deg,#0f1729 0%,#1d1730 100%)}body.dark .spname{color:#dbe7ff}body.dark .sptag{color:#a3b3d1}body.dark .specg{color:#f4a6c4}
+@media (prefers-reduced-motion:reduce){.sph,.specg path,.spname,.sptag{animation:none!important;opacity:1!important;transform:none!important;stroke-dashoffset:0!important}#splash{transition:opacity .2s}}
+</style></head><body><div id="splash" aria-hidden="true"><div class="spin"><svg class="sph" width="110" height="110" viewBox="0 0 24 24"><defs><linearGradient id="spg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#7aa7f7"/><stop offset="1" stop-color="#f4a6c4"/></linearGradient></defs><path d="M12 21C5 16 2 12 2 8.5A4.5 4.5 0 0 1 12 6a4.5 4.5 0 0 1 10 2.5C22 12 19 16 12 21z" fill="url(#spg)"/><path d="M12 9v6M9 12h6" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg>
+<svg class="specg" width="180" height="40" viewBox="0 0 180 40"><path d="M0 22h55l8-12 9 24 8-30 8 26 6-8h86" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+<h1 class="spname">Sick Buddies</h1><p class="sptag">Care, whenever you need it</p></div></div>
+<div class="app">
 <div id="home" class="screen on">
 <header><div class="left"><div class="brand"><svg width="30" height="30" viewBox="0 0 24 24"><path d="M12 21C5 16 2 12 2 8.5A4.5 4.5 0 0 1 12 6a4.5 4.5 0 0 1 10 2.5C22 12 19 16 12 21z" fill="#2563eb"/><path d="M12 9v6M9 12h6" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg>Sick Buddies</div></div>
 <button class="senior" onclick="toggleSenior()">Senior mode<span class="tg"></span></button></header>
@@ -699,5 +713,7 @@ function srSpeak(){if(!('speechSynthesis' in window))return;speechSynthesis.canc
 var srCur={};
 function srStep(id,d){var sc=document.getElementById(id);if(!sc)return;var box=sc.querySelector('.blank');box.classList.add('srwiz');var els=[...box.querySelectorAll('[data-sr]')],max=Math.max(...els.map(e=>+e.dataset.sr));srCur[id]=d===0?1:Math.min(max,Math.max(1,(srCur[id]||1)+d));var n=srCur[id];els.forEach(e=>e.classList.toggle('sron',+e.dataset.sr===n));var nav=box.querySelector('.srnav');nav.querySelector('.srprev').hidden=n===1;nav.querySelector('.srnext').hidden=n===max;nav.querySelector('.srcnt').textContent='Step '+n+' of '+max;if(d)scrollTo(0,0)}
 ['doctor','nurse','cleaning'].forEach(function(n){var f=window[n];window[n]=function(){f.apply(this,arguments);srStep(n,0)}});
+
+(function(){var sp=document.getElementById('splash');if(!sp)return;var rm=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;setTimeout(function(){sp.classList.add('out');setTimeout(function(){sp.remove()},600)},rm?900:2500)})();
 </script>
 </body></html>
