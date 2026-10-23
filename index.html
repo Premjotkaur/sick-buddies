@@ -407,7 +407,7 @@ body.dark .ocrwho{background:#121c33;color:#a3b3d1}body.dark .ocrwho.bad{backgro
 <nav><button class="on" onclick="home(this)"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11 12 3l9 8"/><path d="M5 10v10h14V10"/></svg>Home</button><button class="" onclick="svc(this)"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>Services</button><button class="" onclick="cart(this)"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="20" r="1.5"/><circle cx="18" cy="20" r="1.5"/><path d="M2 3h3l2.7 12.4a2 2 0 0 0 2 1.6h7.7a2 2 0 0 0 2-1.6L21 7H6"/></svg>Cart</button><button class="" onclick="profile(this)"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>Profile</button></nav></div>
 <script>
 /* AI prescription reader: URL of the Cloudflare Worker proxy (proxy/worker.js). Empty = on-device Tesseract only. Never put an API key here. */
-var APP_VERSION='2026-10-23.4';var AI_RX_PROXY='https://sickbuddies-rx.premjot2008.workers.dev';var AI_RX_TIMEOUT=45000;
+var APP_VERSION='2026-10-23.5';var AI_RX_PROXY='https://sickbuddies-rx.premjot2008.workers.dev';var AI_RX_TIMEOUT=45000;
 
 /* ====== CONFIG: paste your Google OAuth Web Client ID here ====== */
 const GOOGLE_CLIENT_ID = 'PASTE_YOUR_CLIENT_ID_HERE.apps.googleusercontent.com';
@@ -730,7 +730,7 @@ RX_DICT.push(
 {n:'Tenovate',g:'Clobetasol cream',c:'Skin',u:'Eczema, psoriasis, severe itching',k:['tenovate','clobetasol'],rx:1},
 {n:'Fucidin',g:'Fusidic acid cream',c:'Skin',u:'Infected cuts, impetigo',k:['fucidin','fusidic'],rx:1},
 {n:'Soframycin',g:'Framycetin cream',c:'Skin',u:'Cuts, burns, wound infection',k:['soframycin','framycetin']},
-{n:'T-Bact',g:'Mupirocin ointment',c:'Skin',u:'Infected wounds, boils, impetigo',k:['tbact','mupirocin'],rx:1},
+{n:'T-Bact',g:'Mupirocin ointment',c:'Skin',u:'Infected wounds, boils, impetigo',k:['tbact','tbac','mupirocin'],rx:1},
 {n:'Elocon',g:'Mometasone cream',c:'Skin',u:'Eczema, dermatitis, itching',k:['elocon','mometasone'],rx:1},
 {n:'Lulifin',g:'Luliconazole cream',c:'Skin',u:'Ringworm, fungal skin infection',k:['lulifin','luliconazole'],rx:1},
 {n:'Tacroz',g:'Tacrolimus ointment',c:'Skin',u:'Eczema (atopic dermatitis)',k:['tacroz','tacrolimus'],rx:1},
