@@ -407,7 +407,7 @@ body.dark .ocrwho{background:#121c33;color:#a3b3d1}body.dark .ocrwho.bad{backgro
 <nav><button class="on" onclick="home(this)"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11 12 3l9 8"/><path d="M5 10v10h14V10"/></svg>Home</button><button class="" onclick="svc(this)"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>Services</button><button class="" onclick="cart(this)"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="20" r="1.5"/><circle cx="18" cy="20" r="1.5"/><path d="M2 3h3l2.7 12.4a2 2 0 0 0 2 1.6h7.7a2 2 0 0 0 2-1.6L21 7H6"/></svg>Cart</button><button class="" onclick="profile(this)"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>Profile</button></nav></div>
 <script>
 /* AI prescription reader: URL of the Cloudflare Worker proxy (proxy/worker.js). Empty = on-device Tesseract only. Never put an API key here. */
-var APP_VERSION='2026-10-23.3';var AI_RX_PROXY='https://sickbuddies-rx.premjot2008.workers.dev';var AI_RX_TIMEOUT=45000;
+var APP_VERSION='2026-10-23.4';var AI_RX_PROXY='https://sickbuddies-rx.premjot2008.workers.dev';var AI_RX_TIMEOUT=45000;
 
 /* ====== CONFIG: paste your Google OAuth Web Client ID here ====== */
 const GOOGLE_CLIENT_ID = 'PASTE_YOUR_CLIENT_ID_HERE.apps.googleusercontent.com';
@@ -609,10 +609,10 @@ var RX_DICT=[
 {n:'Dolo 650',g:'Paracetamol 650 mg',c:'Fever & pain',u:'Fever, headache, body ache',k:['dolo']},
 {n:'Calpol',g:'Paracetamol',c:'Fever & pain',u:'Fever, headache, body ache',k:['calpol']},
 {n:'Crocin',g:'Paracetamol',c:'Fever & pain',u:'Fever, headache, body ache',k:['crocin']},
-{n:'Combiflam',g:'Ibuprofen + Paracetamol',c:'Pain relief',u:'Inflammation, sprains, pain',k:['combiflam','ibuprofen','brufen']},
+{n:'Combiflam',g:'Ibuprofen + Paracetamol',c:'Pain relief',u:'Inflammation, sprains, pain',k:['combiflam']},
 {n:'Zerodol',g:'Aceclofenac',c:'Pain relief',u:'Joint pain, arthritis',k:['zerodol','aceclofenac']},
 {n:'Voveran',g:'Diclofenac',c:'Pain relief',u:'Joint pain, arthritis',k:['voveran','diclofenac']},
-{n:'Saridon',g:'Propyphenazone + Paracetamol + Caffeine',c:'Pain relief',u:'Headache',k:['saridon']},
+{n:'Saridon',g:'Paracetamol + Propyphenazone + Caffeine',c:'Pain relief',u:'Headache',k:['saridon']},
 {n:'Pantocid',g:'Pantoprazole 40 mg',c:'Acidity',u:'Acidity, heartburn, ulcers',k:['pantocid','pantoprazole','pantop']},
 {n:'Pan 40',g:'Pantoprazole 40 mg',c:'Acidity',u:'Acidity, heartburn, ulcers',k:['pan40']},
 {n:'Omez',g:'Omeprazole',c:'Acidity',u:'Acidity, heartburn, ulcers',k:['omez','omeprazole']},
@@ -681,6 +681,66 @@ RX_DICT.push(
 {n:'Vecuronium',g:'Vecuronium injection',c:'Anaesthesia',u:'Muscle relaxant during surgery',k:['vecuronium'],rx:1},
 {n:'Duovir-N',g:'Zidovudine + Lamivudine + Nevirapine',c:'HIV',u:'HIV infection',k:['duovir','zidovudine','nevirapine'],rx:1},
 {n:'Zinconia',g:'Zinc sulfate',c:'Supplement',u:'Diarrhoea in children, zinc deficiency',k:['zinconia','zinc']});
+/* === Batch 3: common Indian brands by therapy area (user list, Oct 23). === */
+RX_DICT.push(
+{n:'Brufen',g:'Ibuprofen',c:'Pain relief',u:'Pain, fever, inflammation',k:['brufen','ibuprofen']},
+{n:'Nise',g:'Nimesulide',c:'Pain relief',u:'Pain, fever, inflammation',k:['nise','nimesulide'],rx:1},
+{n:'Flexon',g:'Ibuprofen + Paracetamol',c:'Pain relief',u:'Pain, fever, body ache',k:['flexon']},
+{n:'Ciplox',g:'Ciprofloxacin',c:'Antibiotic',u:'Urinary, gut and other bacterial infections',k:['ciplox','ciprofloxacin'],rx:1},
+{n:'Moxikind-CV',g:'Amoxicillin + Clavulanic acid',c:'Antibiotic',u:'Throat, ear, chest and skin infections',k:['moxikind'],rx:1},
+{n:'Levoflox',g:'Levofloxacin',c:'Antibiotic',u:'Chest, urinary and sinus infections',k:['levoflox','levofloxacin'],rx:1},
+{n:'Oflox',g:'Ofloxacin',c:'Antibiotic',u:'Urinary, gut and ear infections',k:['oflox','ofloxacin'],rx:1},
+{n:'Lupifix',g:'Cefixime',c:'Antibiotic',u:'Typhoid, urinary and chest infections',k:['lupifix'],rx:1},
+{n:'Glycomet GP',g:'Metformin + Glimepiride',c:'Diabetes',u:'Type 2 diabetes',k:['glycometgp'],rx:1},
+{n:'Janumet',g:'Sitagliptin + Metformin',c:'Diabetes',u:'Type 2 diabetes',k:['janumet','sitagliptin'],rx:1},
+{n:'Galvus Met',g:'Vildagliptin + Metformin',c:'Diabetes',u:'Type 2 diabetes',k:['galvus','vildagliptin'],rx:1},
+{n:'Jardiance',g:'Empagliflozin',c:'Diabetes',u:'Type 2 diabetes, heart failure',k:['jardiance','empagliflozin'],rx:1},
+{n:'Forxiga',g:'Dapagliflozin',c:'Diabetes',u:'Type 2 diabetes, heart and kidney protection',k:['forxiga','dapagliflozin'],rx:1},
+{n:'Trajenta',g:'Linagliptin',c:'Diabetes',u:'Type 2 diabetes',k:['trajenta','linagliptin'],rx:1},
+{n:'Amaryl',g:'Glimepiride',c:'Diabetes',u:'Type 2 diabetes',k:['amaryl','glimepiride'],rx:1},
+{n:'Zoryl',g:'Glimepiride',c:'Diabetes',u:'Type 2 diabetes',k:['zoryl'],rx:1},
+{n:'Rosuvas',g:'Rosuvastatin',c:'Heart',u:'High cholesterol',k:['rosuvas','rosuvastatin'],rx:1},
+{n:'Olmezest',g:'Olmesartan',c:'Heart',u:'High blood pressure',k:['olmezest','olmesartan'],rx:1},
+{n:'Nebicard',g:'Nebivolol',c:'Heart',u:'High blood pressure, heart failure',k:['nebicard','nebivolol'],rx:1},
+{n:'Ramipres',g:'Ramipril',c:'Heart',u:'High BP, heart and kidney protection',k:['ramipres','ramipril'],rx:1},
+{n:'Metolar',g:'Metoprolol',c:'Heart',u:'High BP, chest pain, fast heart rate',k:['metolar','metoprolol'],rx:1},
+{n:'Razo',g:'Rabeprazole',c:'Acidity',u:'Acidity, heartburn, ulcers',k:['razo','rabeprazole'],rx:1},
+{n:'Aciloc',g:'Ranitidine',c:'Acidity',u:'Acidity, heartburn',k:['aciloc']},
+{n:'Ganaton',g:'Itopride',c:'Stomach',u:'Bloating, indigestion, nausea',k:['ganaton','itopride'],rx:1},
+{n:'Lanzol',g:'Lansoprazole',c:'Acidity',u:'Acidity, heartburn, ulcers',k:['lanzol','lansoprazole'],rx:1},
+{n:'Foracort',g:'Formoterol + Budesonide inhaler',c:'Respiratory',u:'Asthma, COPD',k:['foracort','formoterol','budesonide'],rx:1},
+{n:'Seroflo',g:'Salmeterol + Fluticasone inhaler',c:'Respiratory',u:'Asthma, COPD',k:['seroflo','salmeterol','fluticasone'],rx:1},
+{n:'Asthalin',g:'Salbutamol',c:'Respiratory',u:'Wheezing, asthma attacks',k:['asthalin','salbutamol'],rx:1},
+{n:'Levolin',g:'Levosalbutamol',c:'Respiratory',u:'Wheezing, asthma, bronchitis',k:['levolin','levosalbutamol'],rx:1},
+{n:'Duolin',g:'Ipratropium + Salbutamol',c:'Respiratory',u:'Asthma, COPD (nebuliser/inhaler)',k:['duolin'],rx:1},
+{n:'Montair',g:'Montelukast',c:'Respiratory',u:'Asthma, allergic rhinitis',k:['montair10'],rx:1},
+{n:'Xyzal',g:'Levocetirizine',c:'Allergy',u:'Allergy, sneezing, runny nose, itching',k:['xyzal','levocetirizine']},
+{n:'Budenase AQ',g:'Budesonide nasal spray',c:'Allergy',u:'Blocked/runny nose, nasal allergy',k:['budenase'],rx:1},
+{n:'Stemetil',g:'Prochlorperazine',c:'Neuro',u:'Vertigo, nausea, vomiting',k:['stemetil','prochlorperazine'],rx:1},
+{n:'Vertin',g:'Betahistine',c:'Neuro',u:'Vertigo, dizziness',k:['vertin','betahistine'],rx:1},
+{n:'Lonazep',g:'Clonazepam',c:'Neuro / Psych',u:'Seizures, panic, anxiety',k:['lonazep','clonazepam'],rx:1},
+{n:'Zolfresh',g:'Zolpidem',c:'Sleep',u:'Insomnia (short term)',k:['zolfresh','zolpidem'],rx:1},
+{n:'Sizodon',g:'Risperidone',c:'Mental health',u:'Schizophrenia, bipolar disorder',k:['sizodon','risperidone'],rx:1},
+{n:'Depakote',g:'Divalproex sodium',c:'Neuro',u:'Epilepsy, bipolar, migraine prevention',k:['depakote','divalproex','valproate'],rx:1},
+{n:'Lamitor',g:'Lamotrigine',c:'Neuro',u:'Epilepsy, bipolar disorder',k:['lamitor','lamotrigine'],rx:1},
+{n:'Gabapin',g:'Gabapentin',c:'Neuro',u:'Nerve pain, seizures',k:['gabapin','gabapentin'],rx:1},
+{n:'Pregaba',g:'Pregabalin',c:'Neuro',u:'Nerve pain, fibromyalgia',k:['pregaba','pregabalin'],rx:1},
+{n:'Amitone',g:'Amitriptyline',c:'Neuro / Psych',u:'Depression, nerve pain, migraine prevention',k:['amitone','amitriptyline'],rx:1},
+{n:'Candid B',g:'Clotrimazole + Beclomethasone cream',c:'Skin',u:'Fungal skin infection with itching',k:['candid','clotrimazole'],rx:1},
+{n:'Tenovate',g:'Clobetasol cream',c:'Skin',u:'Eczema, psoriasis, severe itching',k:['tenovate','clobetasol'],rx:1},
+{n:'Fucidin',g:'Fusidic acid cream',c:'Skin',u:'Infected cuts, impetigo',k:['fucidin','fusidic'],rx:1},
+{n:'Soframycin',g:'Framycetin cream',c:'Skin',u:'Cuts, burns, wound infection',k:['soframycin','framycetin']},
+{n:'T-Bact',g:'Mupirocin ointment',c:'Skin',u:'Infected wounds, boils, impetigo',k:['tbact','mupirocin'],rx:1},
+{n:'Elocon',g:'Mometasone cream',c:'Skin',u:'Eczema, dermatitis, itching',k:['elocon','mometasone'],rx:1},
+{n:'Lulifin',g:'Luliconazole cream',c:'Skin',u:'Ringworm, fungal skin infection',k:['lulifin','luliconazole'],rx:1},
+{n:'Tacroz',g:'Tacrolimus ointment',c:'Skin',u:'Eczema (atopic dermatitis)',k:['tacroz','tacrolimus'],rx:1},
+{n:'Neurobion Forte',g:'Vitamin B-complex + B12',c:'Supplement',u:'Nerve health, B12 deficiency, weakness',k:['neurobion']},
+{n:'A to Z',g:'Multivitamin + Multimineral',c:'Supplement',u:'General health, weakness',k:['atoz']},
+{n:'Revital H',g:'Multivitamin + Ginseng',c:'Supplement',u:'Energy, general wellness',k:['revital']},
+{n:'Livogen',g:'Iron + Folic acid',c:'Supplement',u:'Anaemia, iron deficiency',k:['livogen']},
+{n:'Calcimax',g:'Calcium + Vitamin D3 + minerals',c:'Supplement',u:'Bone health, calcium deficiency',k:['calcimax']},
+{n:'Supradyn',g:'Multivitamin + Multimineral',c:'Supplement',u:'General health, weakness',k:['supradyn']},
+{n:'Zincovit',g:'Multivitamin + Zinc',c:'Supplement',u:'Immunity, general health',k:['zincovit']});
 var RX_HINTS=RX_DICT.map(d=>d.n+' - '+d.g);
 function dictNear(x,k){return x===k||(k.length>=5&&x.length>=4&&lev(x,k)<=(k.length>=8?2:1))||(k.length>=5&&x.length>k.length&&x.startsWith(k))}
 function dictFind(txt){var w=ocrClean(txt||'').split(' ').filter(Boolean),hits=[];for(var i=0;i<w.length;i++){var x=w[i],x2=x+(w[i+1]||'');for(var d of RX_DICT){for(var k of d.k){var ok=x===k||x2===k||(k.length>=5&&dictNear(x,k));if(ok){var gen=d.k.indexOf(k)>0&&lev(x,d.k[0])>1&&new RegExp('^'+k.slice(0,5)).test(ocrClean(d.g).replace(/ /g,''));if(!hits.some(h=>h.d===d))hits.push({d:d,gen:gen,at:i});break}}}}return hits}
