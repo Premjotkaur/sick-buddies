@@ -407,7 +407,7 @@ body.dark .ocrwho{background:#121c33;color:#a3b3d1}body.dark .ocrwho.bad{backgro
 <nav><button class="on" onclick="home(this)"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11 12 3l9 8"/><path d="M5 10v10h14V10"/></svg>Home</button><button class="" onclick="svc(this)"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>Services</button><button class="" onclick="cart(this)"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="20" r="1.5"/><circle cx="18" cy="20" r="1.5"/><path d="M2 3h3l2.7 12.4a2 2 0 0 0 2 1.6h7.7a2 2 0 0 0 2-1.6L21 7H6"/></svg>Cart</button><button class="" onclick="profile(this)"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>Profile</button></nav></div>
 <script>
 /* AI prescription reader: URL of the Cloudflare Worker proxy (proxy/worker.js). Empty = on-device Tesseract only. Never put an API key here. */
-var APP_VERSION='2026-10-23.2';var AI_RX_PROXY='https://sickbuddies-rx.premjot2008.workers.dev';var AI_RX_TIMEOUT=45000;
+var APP_VERSION='2026-10-23.3';var AI_RX_PROXY='https://sickbuddies-rx.premjot2008.workers.dev';var AI_RX_TIMEOUT=45000;
 
 /* ====== CONFIG: paste your Google OAuth Web Client ID here ====== */
 const GOOGLE_CLIENT_ID = 'PASTE_YOUR_CLIENT_ID_HERE.apps.googleusercontent.com';
@@ -622,7 +622,7 @@ var RX_DICT=[
 {n:'Glycomet',g:'Metformin',c:'Diabetes',u:'Type 2 diabetes',k:['glycomet','metformin'],rx:1},
 {n:'Amlodac',g:'Amlodipine',c:'Heart & BP',u:'High blood pressure',k:['amlodac','amlodipine','amlong'],rx:1},
 {n:'Atorva',g:'Atorvastatin',c:'Heart & BP',u:'High cholesterol',k:['atorva','atorvastatin'],rx:1},
-{n:'Augmentin 625',g:'Amoxicillin + Clavulanic acid',c:'Antibiotic',u:'Bacterial throat and ear infections',k:['augmentin','amoxicillin','amoxycillin','clavam'],rx:1},
+{n:'Augmentin 625',g:'Amoxicillin + Clavulanic acid',c:'Antibiotic',u:'Bacterial throat and ear infections',k:['augmentin','amoxicillin','amoxycillin','clavam','clavulanic','amoxyclav'],rx:1},
 {n:'Azithral 500',g:'Azithromycin',c:'Antibiotic',u:'Respiratory and skin infections',k:['azithral','azithromycin','azee'],rx:1},
 {n:'Montair LC',g:'Montelukast + Levocetirizine',c:'Allergy',u:'Allergy, sneezing, blocked nose',k:['montair','montelukast'],rx:1},
 {n:'Allegra',g:'Fexofenadine',c:'Allergy',u:'Allergy, hay fever, itching',k:['allegra','fexofenadine']},
@@ -641,6 +641,46 @@ var RX_DICT=[
 {n:'Limcee',g:'Vitamin C 500 mg',c:'Supplement',u:'Immunity, vitamin C deficiency',k:['limcee']},
 {n:'Cyclopam',g:'Dicyclomine + Paracetamol',c:'Stomach',u:'Stomach pain, cramps',k:['cyclopam','dicyclomine']},
 {n:'Norflox TZ',g:'Norfloxacin + Tinidazole',c:'Antibiotic',u:'Loose motions, stomach infection',k:['norflox','norfloxacin'],rx:1}];
+/* === NLEM 2011 additions (batch 2). To extend: push more {n,g,c,u,k:[lowercase keys],rx} entries in a new batch below. === */
+RX_DICT.push(
+{n:'Dextrose 25%',g:'Dextrose 25% injection',c:'IV fluid',u:'Low blood sugar (hypoglycaemia)',k:['dextrose'],rx:1},
+{n:'Mesacol',g:'Mesalamine (5-ASA)',c:'Gut',u:'Ulcerative colitis, Crohn\'s disease',k:['mesacol','mesalamine','mesalazine'],rx:1},
+{n:'Zyloric',g:'Allopurinol',c:'Gout',u:'Gout, high uric acid',k:['zyloric','allopurinol'],rx:1},
+{n:'Betnovate',g:'Betamethasone',c:'Steroid',u:'Skin inflammation, allergy, swelling',k:['betnovate','betnesol','betamethasone'],rx:1},
+{n:'Carboplatin',g:'Carboplatin injection',c:'Cancer',u:'Ovarian, lung and other cancers',k:['carboplatin'],rx:1},
+{n:'Leukeran',g:'Chlorambucil',c:'Cancer',u:'Chronic leukaemia, lymphoma',k:['leukeran','chlorambucil'],rx:1},
+{n:'Dalacin C',g:'Clindamycin',c:'Antibiotic',u:'Skin, bone and dental infections',k:['dalacin','clindamycin'],rx:1},
+{n:'Clopilet',g:'Clopidogrel 75 mg',c:'Heart',u:'Prevents heart attack and stroke (blood thinner)',k:['clopilet','clopidogrel','plavix'],rx:1},
+{n:'Dacarbazine',g:'Dacarbazine injection',c:'Cancer',u:'Melanoma, Hodgkin lymphoma',k:['dacarbazine'],rx:1},
+{n:'Daunorubicin',g:'Daunorubicin injection',c:'Cancer',u:'Acute leukaemia',k:['daunorubicin'],rx:1},
+{n:'Valium',g:'Diazepam',c:'Anxiety & sleep',u:'Anxiety, muscle spasm, seizures',k:['valium','calmpose','diazepam'],rx:1},
+{n:'EMLA cream',g:'Lidocaine + Prilocaine cream',c:'Anaesthetic',u:'Numbs skin before needles/procedures',k:['emla','prilocaine'],rx:1},
+{n:'Clexane',g:'Enoxaparin injection',c:'Blood thinner',u:'Prevents and treats blood clots',k:['clexane','enoxaparin'],rx:1},
+{n:'Famocid',g:'Famotidine',c:'Acidity',u:'Acidity, heartburn, ulcers',k:['famocid','famotidine','famtac']},
+{n:'Fentanyl',g:'Fentanyl',c:'Strong painkiller',u:'Severe pain, anaesthesia',k:['fentanyl'],rx:1},
+{n:'Grafeel',g:'Filgrastim injection',c:'Cancer support',u:'Raises white blood cells after chemotherapy',k:['grafeel','filgrastim'],rx:1},
+{n:'HCQS',g:'Hydroxychloroquine',c:'Arthritis / malaria',u:'Rheumatoid arthritis, lupus, malaria',k:['hcqs','hydroxychloroquine'],rx:1},
+{n:'Ifosfamide',g:'Ifosfamide injection',c:'Cancer',u:'Sarcoma, testicular and other cancers',k:['ifosfamide'],rx:1},
+{n:'Veenat',g:'Imatinib',c:'Cancer',u:'Chronic myeloid leukaemia, GIST',k:['veenat','imatinib','glivec'],rx:1},
+{n:'Ipravent',g:'Ipratropium bromide inhaler',c:'Respiratory',u:'Asthma, COPD, breathlessness',k:['ipravent','ipratropium'],rx:1},
+{n:'Lefno',g:'Leflunomide',c:'Arthritis',u:'Rheumatoid arthritis',k:['lefno','leflunomide'],rx:1},
+{n:'Ativan',g:'Lorazepam',c:'Anxiety & sleep',u:'Anxiety, insomnia, seizures',k:['ativan','lorazepam'],rx:1},
+{n:'Mefloquine',g:'Mefloquine',c:'Antimalarial',u:'Malaria treatment and prevention',k:['mefloquine','mefliam'],rx:1},
+{n:'Mesna',g:'Mesna injection',c:'Cancer support',u:'Protects bladder during chemotherapy',k:['mesna'],rx:1},
+{n:'Misoprost',g:'Misoprostol',c:'Women\'s health',u:'Stomach ulcer protection, bleeding after childbirth',k:['misoprost','misoprostol','cytotec'],rx:1},
+{n:'Mucomix',g:'N-acetylcysteine',c:'Respiratory',u:'Loosens mucus, paracetamol overdose',k:['mucomix','acetylcysteine','nac'],rx:1},
+{n:'Oleanz',g:'Olanzapine',c:'Mental health',u:'Schizophrenia, bipolar disorder',k:['oleanz','olanzapine'],rx:1},
+{n:'Oxaliplatin',g:'Oxaliplatin injection',c:'Cancer',u:'Colon and rectal cancer',k:['oxaliplatin'],rx:1},
+{n:'Permite',g:'Permethrin 5% cream',c:'Skin',u:'Scabies, lice',k:['permite','permethrin']},
+{n:'Piperazine',g:'Piperazine syrup',c:'Deworming',u:'Roundworm and threadworm',k:['piperazine']},
+{n:'Mixtard 30/70',g:'Premix insulin 30:70 injection',c:'Diabetes',u:'Type 1 and 2 diabetes',k:['mixtard','huminsulin','premix','insulin'],rx:1},
+{n:'Propofol',g:'Propofol injection',c:'Anaesthesia',u:'General anaesthesia, sedation',k:['propofol','diprivan'],rx:1},
+{n:'Sevoflurane',g:'Sevoflurane',c:'Anaesthesia',u:'General anaesthesia (inhaled)',k:['sevoflurane','sevorane'],rx:1},
+{n:'Lamostav',g:'Stavudine + Lamivudine',c:'HIV',u:'HIV infection',k:['lamostav','stavudine'],rx:1},
+{n:'Ultracet',g:'Tramadol',c:'Strong painkiller',u:'Moderate to severe pain',k:['ultracet','tramadol','contramal'],rx:1},
+{n:'Vecuronium',g:'Vecuronium injection',c:'Anaesthesia',u:'Muscle relaxant during surgery',k:['vecuronium'],rx:1},
+{n:'Duovir-N',g:'Zidovudine + Lamivudine + Nevirapine',c:'HIV',u:'HIV infection',k:['duovir','zidovudine','nevirapine'],rx:1},
+{n:'Zinconia',g:'Zinc sulfate',c:'Supplement',u:'Diarrhoea in children, zinc deficiency',k:['zinconia','zinc']});
 var RX_HINTS=RX_DICT.map(d=>d.n+' - '+d.g);
 function dictNear(x,k){return x===k||(k.length>=5&&x.length>=4&&lev(x,k)<=(k.length>=8?2:1))||(k.length>=5&&x.length>k.length&&x.startsWith(k))}
 function dictFind(txt){var w=ocrClean(txt||'').split(' ').filter(Boolean),hits=[];for(var i=0;i<w.length;i++){var x=w[i],x2=x+(w[i+1]||'');for(var d of RX_DICT){for(var k of d.k){var ok=x===k||x2===k||(k.length>=5&&dictNear(x,k));if(ok){var gen=d.k.indexOf(k)>0&&lev(x,d.k[0])>1&&new RegExp('^'+k.slice(0,5)).test(ocrClean(d.g).replace(/ /g,''));if(!hits.some(h=>h.d===d))hits.push({d:d,gen:gen,at:i});break}}}}return hits}
